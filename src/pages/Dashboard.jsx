@@ -61,12 +61,12 @@ const Dashboard = () => {
             ]);
 
             setAccounts(accountsRes.data.data);
-            setTotalNetWorth(accountsRes.data.totalBalance || 0);
             setSummary(summaryRes.data.data);
             setCategoryBreakdown(breakdownRes.data.data);
             setBudgetAlerts(alertsRes.data.data);
             setRecentTransactions(transactionsRes.data.data);
             setGoals(goalsRes.data.data || []);
+            
             // Calculate investment totals with proper currency conversion
             const investmentList = investmentsRes.data.data || [];
             const investmentTotals = investmentList.reduce((acc, inv) => {
@@ -79,6 +79,10 @@ const Dashboard = () => {
             investmentTotals.totalProfitLoss = investmentTotals.totalCurrent - investmentTotals.totalInvested;
             
             setInvestments(investmentTotals);
+            
+            // Net Worth = Cash in Accounts + Current Value of Investments
+            const totalCash = accountsRes.data.totalBalance || 0;
+            setTotalNetWorth(totalCash + investmentTotals.totalCurrent);
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
