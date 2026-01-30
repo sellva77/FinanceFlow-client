@@ -50,7 +50,7 @@ const Sidebar = () => {
             {/* Mobile Header */ }
             <div className="mobile-header">
                 <button
-                    
+                    onClick={() => setIsOpen(!isOpen)}
                     className="mobile-toggle"
                 >
                     {isOpen ? <HiXMark size={24} /> : <HiBars3 size={24} />}

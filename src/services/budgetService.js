@@ -6,6 +6,6 @@ export const budgetService = {
     create: (data) => api.post('/budgets', data),
     update: (id, data) => api.put(`/budgets/${id}`, data),
     delete: (id) => api.delete(`/budgets/${id}`),
-    
+    getAlerts: () => api.get('/budgets/alerts'),
     checkBudgetStatus: (month, year) => api.get(`/budgets/status`, { params: { month, year } })
 };

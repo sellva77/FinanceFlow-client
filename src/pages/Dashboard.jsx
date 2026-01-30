@@ -13,8 +13,9 @@ import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const { user } = useAuth();
-    const { formatCurrency, formatCompactCurrency, convertAmount } = useCurrency();
+    const { formatCurrency, formatCompactCurrency, convertAmount, settings } = useCurrency();
     const [accounts, setAccounts] = useState([]);
+    const [totalNetWorth, setTotalNetWorth] = useState(0);
     const [summary, setSummary] = useState({ income: { total: 0 }, expense: { total: 0 }, netSavings: 0 });
     const [categoryBreakdown, setCategoryBreakdown] = useState([]);
     const [budgetAlerts, setBudgetAlerts] = useState([]);
@@ -60,6 +61,7 @@ const Dashboard = () => {
             ]);
 
             setAccounts(accountsRes.data.data);
+            setTotalNetWorth(accountsRes.data.totalBalance || 0);
             setSummary(summaryRes.data.data);
             setCategoryBreakdown(breakdownRes.data.data);
             setBudgetAlerts(alertsRes.data.data);
@@ -84,13 +86,13 @@ const Dashboard = () => {
         }
     };
 
-    const getTotalBalance = () => {
-        return accounts.reduce((sum, acc) => {
-            const amount = acc.balance || 0;
-            const accCurrency = acc.currency?.code;
-            return sum + convertAmount(amount, accCurrency);
-        }, 0);
-    };
+    // const getTotalBalance = () => {
+    //     return accounts.reduce((sum, acc) => {
+    //         const amount = acc.balance || 0;
+    //         const accCurrency = acc.currency?.code;
+    //         return sum + convertAmount(amount, accCurrency);
+    //     }, 0);
+    // };
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -144,6 +146,8 @@ const Dashboard = () => {
                     display: flex;
                     align-items: center;
                     gap: 2rem;
+                    flex-wrap: wrap; 
+                    justify-content: center;
                 }
 
                 @media (max-width: 640px) {
@@ -173,6 +177,7 @@ const Dashboard = () => {
                 }
             `}</style>
             {/* Hero Section */}
+            {settings?.dashboardLayout?.showNetWorth !== false && (
             <div className="hero-section" style={{
                 background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 50%, rgba(236, 72, 153, 0.05) 100%)',
                 borderRadius: '24px',
@@ -227,7 +232,7 @@ const Dashboard = () => {
                         minWidth: '280px'
                     }}>
                         <p style={{ color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Total Net Worth</p>
-                        <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{formatCurrency(getTotalBalance())}</h2>
+                        <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{formatCurrency(totalNetWorth)}</h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <span style={{
                                 display: 'inline-flex',
@@ -247,6 +252,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Quick Actions */}
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
@@ -350,6 +356,7 @@ const Dashboard = () => {
             </div>
 
             {/* Account Overview Section */}
+            {settings?.dashboardLayout?.showAccountBalances !== false && (
             <div className="dashboard-section glass" style={{ marginBottom: '2rem' }}>
                 <div className="section-header">
                     <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -403,10 +410,12 @@ const Dashboard = () => {
                     })}
                 </div>
             </div>
+            )}
 
             {/* Main Content Grid */}
             <div className="dash-main-grid">
                 {/* Expense Breakdown */}
+                {settings?.dashboardLayout?.showExpenseChart !== false && (
                 <div className="dashboard-section glass">
                     <div className="section-header">
                         <h3 className="section-title">Expense Breakdown</h3>
@@ -457,8 +466,10 @@ const Dashboard = () => {
                         </div>
                     )}
                 </div>
+                )}
 
                 {/* Budget Alerts */}
+                {settings?.dashboardLayout?.showBudgetOverview !== false && (
                 <div className="dashboard-section glass">
                     <div className="section-header">
                         <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -511,9 +522,11 @@ const Dashboard = () => {
                         </div>
                     )}
                 </div>
+                )}
             </div>
 
             {/* Recent Transactions */}
+            {settings?.dashboardLayout?.showRecentTransactions !== false && (
             <div className="dashboard-section glass">
                 <div className="section-header">
                     <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -595,6 +608,7 @@ const Dashboard = () => {
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 };

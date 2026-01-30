@@ -10,6 +10,7 @@ export const transactionService = {
     // Specific endpoints
     getAnalytics: (params) => api.get('/transactions/analytics', { params }),
     getSummary: (params) => api.get('/transactions/summary', { params }),
+    getCategoryBreakdown: (params) => api.get('/transactions/category-breakdown', { params }),
     importTransactions: (data) => api.post('/transactions/import', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
