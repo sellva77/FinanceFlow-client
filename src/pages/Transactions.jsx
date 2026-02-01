@@ -124,7 +124,7 @@ const Transactions = () => {
                 transactionService.getAll({ ...filters, page: pagination.page }),
                 accountService.getAll(),
                 categoryService.getAll(),
-                transactionService.getSummary({ month: new Date().getMonth() + 1, year: new Date().getFullYear() })
+                transactionService.getSummary(filters.month && filters.year ? { month: filters.month, year: filters.year } : {})
             ]);
 
             setTransactions(txRes.data.data);
@@ -267,75 +267,60 @@ const Transactions = () => {
     return (
         <div className="dashboard-container">
             {/* Header */}
-            <div style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Transactions</h1>
-                        <p style={{ color: '#94a3b8' }}>
+            <div className="page-header">
+                <div className="page-header-content">
+                    <div className="page-header-info">
+                        <h1 className="page-title">Transactions</h1>
+                        <p className="page-subtitle">
                             <HiClock style={{ display: 'inline', marginRight: '6px' }} />
-                            {pagination.total} transactions • {format(new Date(), 'MMMM yyyy')}
+                            {pagination.total} transactions • {filters.month && filters.year ? format(new Date(filters.year, filters.month - 1), 'MMMM yyyy') : 'All Time'}
                         </p>
                     </div>
-                    <button onClick={() => setShowModal(true)} className="btn-primary" style={{ padding: '0.875rem 1.5rem' }}>
+                    <button onClick={() => setShowModal(true)} className="btn-primary add-btn">
                         <HiPlus size={20} />
-                        <span>New Transaction</span>
+                        <span className="add-btn-text">New Transaction</span>
                     </button>
                 </div>
             </div>
 
             {/* Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)',
-                    border: '1px solid rgba(34, 197, 94, 0.2)',
-                    borderRadius: '16px',
-                    padding: '1.25rem'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(34, 197, 94, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="summary-cards-grid">
+                <div className="summary-card summary-card-income">
+                    <div className="summary-card-header">
+                        <div className="summary-card-icon" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
                             <HiArrowTrendingUp size={18} style={{ color: '#22c55e' }} />
                         </div>
                         <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Income</span>
                     </div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4ade80' }}>{formatCurrency(summary.income)}</h3>
+                    <h3 className="summary-card-amount" style={{ color: '#4ade80' }}>{formatCurrency(summary.income)}</h3>
                 </div>
 
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                    borderRadius: '16px',
-                    padding: '1.25rem'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="summary-card summary-card-expense">
+                    <div className="summary-card-header">
+                        <div className="summary-card-icon" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
                             <HiArrowTrendingDown size={18} style={{ color: '#ef4444' }} />
                         </div>
                         <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Expenses</span>
                     </div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f87171' }}>{formatCurrency(summary.expense)}</h3>
+                    <h3 className="summary-card-amount" style={{ color: '#f87171' }}>{formatCurrency(summary.expense)}</h3>
                 </div>
 
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%)',
-                    border: '1px solid rgba(99, 102, 241, 0.2)',
-                    borderRadius: '16px',
-                    padding: '1.25rem'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="summary-card summary-card-transfer">
+                    <div className="summary-card-header">
+                        <div className="summary-card-icon" style={{ background: 'rgba(99, 102, 241, 0.2)' }}>
                             <HiArrowsRightLeft size={18} style={{ color: '#6366f1' }} />
                         </div>
                         <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Transfers</span>
                     </div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#818cf8' }}>{formatCurrency(summary.transfer)}</h3>
+                    <h3 className="summary-card-amount" style={{ color: '#818cf8' }}>{formatCurrency(summary.transfer)}</h3>
                 </div>
             </div>
 
             {/* Search and Filters */}
-            <div className="glass" style={{ padding: '1rem', borderRadius: '16px', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="glass filter-bar">
+                <div className="filter-bar-content">
                     {/* Search */}
-                    <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+                    <div className="filter-search">
                         <HiMagnifyingGlass size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
                         <input
                             type="text"
@@ -343,29 +328,17 @@ const Transactions = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="input-field"
-                            style={{ paddingLeft: '40px' }}
+                            style={{ paddingLeft: '40px', width: '100%' }}
                         />
                     </div>
 
                     {/* Quick Type Filters */}
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div className="filter-type-buttons">
                         {['', 'income', 'expense', 'transfer'].map((type) => (
                             <button
                                 key={type}
                                 onClick={() => setFilters({ ...filters, type })}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '20px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: 500,
-                                    background: filters.type === type 
-                                        ? (type === 'income' ? '#22c55e' : type === 'expense' ? '#ef4444' : type === 'transfer' ? '#6366f1' : 'white')
-                                        : 'rgba(255,255,255,0.05)',
-                                    color: filters.type === type ? (type === '' ? '#0f172a' : 'white') : '#94a3b8',
-                                    border: '1px solid ' + (filters.type === type ? 'transparent' : 'rgba(255,255,255,0.1)'),
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s'
-                                }}
+                                className={`filter-type-btn ${filters.type === type ? 'active' : ''} ${type || 'all'}`}
                             >
                                 {type === '' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
                             </button>
@@ -373,42 +346,32 @@ const Transactions = () => {
                     </div>
 
                     {/* More Filters Toggle */}
-                    <button 
-                        onClick={() => setShowFilters(!showFilters)}
-                        style={{
-                            padding: '8px 16px',
-                            borderRadius: '10px',
-                            background: showFilters ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
-                            color: showFilters ? '#818cf8' : '#94a3b8',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <HiFunnel size={16} />
-                        Filters
-                    </button>
+                    <div className="filter-actions">
+                        <button 
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="filter-action-btn"
+                            style={{
+                                background: showFilters ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
+                                color: showFilters ? '#818cf8' : '#94a3b8'
+                            }}
+                        >
+                            <HiFunnel size={16} />
+                            <span className="filter-btn-text">Filters</span>
+                        </button>
 
-                    {/* Tag Stats Button */}
-                    <button 
-                        onClick={fetchTagStats}
-                        style={{
-                            padding: '8px 16px',
-                            borderRadius: '10px',
-                            background: showTagStats ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
-                            color: showTagStats ? '#818cf8' : '#94a3b8',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <HiTag size={16} />
-                        Stats
-                    </button>
+                        {/* Tag Stats Button */}
+                        <button 
+                            onClick={fetchTagStats}
+                            className="filter-action-btn"
+                            style={{
+                                background: showTagStats ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
+                                color: showTagStats ? '#818cf8' : '#94a3b8'
+                            }}
+                        >
+                            <HiTag size={16} />
+                            <span className="filter-btn-text">Stats</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Expanded Filters */}
@@ -496,33 +459,17 @@ const Transactions = () => {
                                     return (
                                         <div
                                             key={tx._id}
-                                            className="glass"
-                                            style={{
-                                                padding: '1rem 1.25rem',
-                                                borderRadius: '14px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                gap: '1rem',
-                                                cursor: 'pointer',
-                                                transition: 'transform 0.2s, box-shadow 0.2s'
-                                            }}
+                                            className="glass tx-card"
                                             onClick={() => openEditModal(tx)}
                                         >
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div className="tx-card-main">
                                                 {/* Icon */}
-                                                <div style={{
-                                                    width: '48px',
-                                                    height: '48px',
-                                                    borderRadius: '14px',
+                                                <div className="tx-card-icon" style={{
                                                     background: tx.type === 'income' 
                                                         ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1))'
                                                         : tx.type === 'expense'
                                                         ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1))'
-                                                        : 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1))',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
+                                                        : 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1))'
                                                 }}>
                                                     <CategoryIcon 
                                                         size={22} 
@@ -533,33 +480,27 @@ const Transactions = () => {
                                                 </div>
 
                                                 {/* Details */}
-                                                <div>
-                                                    <h4 style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '2px' }}>{tx.category}</h4>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#64748b' }}>
+                                                <div className="tx-card-details">
+                                                    <h4 className="tx-card-title">{tx.category}</h4>
+                                                    <div className="tx-card-meta">
                                                         <span>{tx.fromAccount?.accountName || tx.toAccount?.accountName || '-'}</span>
-                                                        <span>•</span>
-                                                        <span style={{ textTransform: 'capitalize' }}>{tx.paymentMode?.replace('_', ' ')}</span>
+                                                        <span className="tx-card-dot">•</span>
+                                                        <span className="tx-card-payment">{tx.paymentMode?.replace('_', ' ')}</span>
                                                         {tx.note && (
                                                             <>
-                                                                <span>•</span>
-                                                                <span style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.note}</span>
+                                                                <span className="tx-card-dot tx-card-hide-mobile">•</span>
+                                                                <span className="tx-card-note tx-card-hide-mobile">{tx.note}</span>
                                                             </>
                                                         )}
                                                     </div>
                                                     {/* Tags */}
                                                     {tx.tags && tx.tags.length > 0 && (
-                                                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                                                        <div className="tx-card-tags">
                                                             {tx.tags.map(tag => (
-                                                                <span key={tag._id} style={{
-                                                                    fontSize: '0.65rem',
-                                                                    padding: '2px 6px',
-                                                                    borderRadius: '8px',
+                                                                <span key={tag._id} className="tx-card-tag" style={{
                                                                     background: `${tag.color}20`,
                                                                     color: tag.color,
-                                                                    border: `1px solid ${tag.color}40`,
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    gap: '2px'
+                                                                    border: `1px solid ${tag.color}40`
                                                                 }}>
                                                                     {tag.icon && <span>{tag.icon}</span>}
                                                                     {tag.name}
@@ -571,29 +512,18 @@ const Transactions = () => {
                                             </div>
 
                                             {/* Amount & Actions */}
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <p style={{
-                                                        fontSize: '1.1rem',
-                                                        fontWeight: 'bold',
+                                            <div className="tx-card-actions">
+                                                <div className="tx-card-amount-wrapper">
+                                                    <p className="tx-card-amount" style={{
                                                         color: tx.type === 'income' ? '#4ade80' : tx.type === 'expense' ? '#f87171' : '#818cf8'
                                                     }}>
                                                         {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                                                     </p>
                                                     {tx.wasEdited && (
-                                                        <span style={{ fontSize: '0.7rem', color: '#fbbf24' }}>edited</span>
+                                                        <span className="tx-card-edited">edited</span>
                                                     )}
                                                 </div>
-                                                <div style={{
-                                                    width: '32px',
-                                                    height: '32px',
-                                                    borderRadius: '8px',
-                                                    background: 'rgba(255,255,255,0.05)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: '#64748b'
-                                                }}>
+                                                <div className="tx-card-edit-btn">
                                                     <HiPencil size={14} />
                                                 </div>
                                             </div>

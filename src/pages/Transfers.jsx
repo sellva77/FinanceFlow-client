@@ -182,15 +182,17 @@ const Transfers = () => {
     return (
         <div className="dashboard-container">
             {/* Header */}
-            <div className="dashboard-header">
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Account Transfers</h1>
-                    <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>Allocate funds between your accounts</p>
+            <div className="page-header">
+                <div className="page-header-content">
+                    <div className="page-header-info">
+                        <h1 className="page-title">Account Transfers</h1>
+                        <p className="page-subtitle">Allocate funds between your accounts</p>
+                    </div>
+                    <button onClick={() => setShowModal(true)} className="btn-primary add-btn">
+                        <HiArrowsRightLeft size={20} />
+                        <span className="add-btn-text">New Transfer</span>
+                    </button>
                 </div>
-                <button onClick={() => setShowModal(true)} className="btn-primary">
-                    <HiArrowsRightLeft size={20} />
-                    <span>New Transfer</span>
-                </button>
             </div>
 
             {/* Quick Transfer Cards */}
@@ -199,30 +201,22 @@ const Transfers = () => {
                     <HiBanknotes size={20} />
                     <span>Your Accounts</span>
                 </h2>
-                <div className="grid-4">
+                <div className="account-cards-grid">
                     {accounts.map((account) => (
                         <div 
                             key={account._id} 
-                            className="glass" 
-                            style={{ 
-                                padding: '1.5rem', 
-                                borderRadius: '16px',
-                                background: getAccountGradient(account.accountType),
-                                cursor: 'pointer',
-                                transition: 'transform 0.2s, box-shadow 0.2s'
-                            }}
+                            className="account-card" 
+                            style={{ background: getAccountGradient(account.accountType) }}
                             onClick={() => {
                                 setFormData(prev => ({ ...prev, fromAccount: account._id }));
                                 setShowModal(true);
                             }}
                         >
-                            <p style={{ fontSize: '0.85rem', opacity: 0.9, textTransform: 'capitalize' }}>
-                                {account.accountType}
-                            </p>
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0.5rem 0' }}>
+                            <p className="account-card-type">{account.accountType}</p>
+                            <h3 className="account-card-balance">
                                 {formatAccountCurrency(account.balance, account)}
                             </h3>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>{account.accountName}</p>
+                            <p className="account-card-name">{account.accountName}</p>
                         </div>
                     ))}
                 </div>
@@ -236,62 +230,46 @@ const Transfers = () => {
                 </h2>
                 
                 {transfers.length === 0 ? (
-                    <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: '16px' }}>
+                    <div className="glass empty-state">
                         <HiArrowsRightLeft size={48} style={{ color: '#6366f1', margin: '0 auto 1rem' }} />
-                        <p style={{ color: '#94a3b8' }}>No transfers yet. Start by allocating funds between accounts.</p>
+                        <p>No transfers yet. Start by allocating funds between accounts.</p>
                     </div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div className="transfer-list">
                         {transfers.slice(0, 10).map((transfer) => {
                             const fromAcc = transfer.fromAccount;
                             const toAcc = transfer.toAccount;
                             return (
                                 <div 
                                     key={transfer._id} 
-                                    className="glass" 
-                                    style={{ 
-                                        padding: '1.25rem 1.5rem', 
-                                        borderRadius: '12px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        gap: '1rem'
-                                    }}
+                                    className="glass transfer-card"
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-                                        <div style={{ 
-                                            width: '48px', 
-                                            height: '48px', 
-                                            borderRadius: '12px', 
-                                            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
+                                    <div className="transfer-card-main">
+                                        <div className="transfer-card-icon">
                                             <HiArrowsRightLeft size={24} color="white" />
                                         </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                                <span style={{ fontWeight: 600, color: '#f87171' }}>
+                                        <div className="transfer-card-details">
+                                            <div className="transfer-card-accounts">
+                                                <span className="transfer-from">
                                                     {fromAcc?.accountName || 'Unknown'}
                                                 </span>
-                                                <HiArrowRight size={16} style={{ color: '#6366f1' }} />
-                                                <span style={{ fontWeight: 600, color: '#4ade80' }}>
+                                                <HiArrowRight size={16} className="transfer-arrow" />
+                                                <span className="transfer-to">
                                                     {toAcc?.accountName || 'Unknown'}
                                                 </span>
                                             </div>
-                                            <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                                            <p className="transfer-card-note">
                                                 {transfer.note || 'Internal Transfer'} • {format(new Date(transfer.transactionDate), 'MMM d, yyyy')}
                                             </p>
                                         </div>
                                     </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#818cf8' }}>
+                                    <div className="transfer-card-amount-section">
+                                        <p className="transfer-card-amount">
                                             {formatGlobalCurrency(transfer.amount)}
                                         </p>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'flex-end' }}>
+                                        <div className="transfer-card-status">
                                             <HiCheckCircle size={14} style={{ color: '#22c55e' }} />
-                                            <span style={{ fontSize: '0.75rem', color: '#22c55e' }}>Completed</span>
+                                            <span>Completed</span>
                                         </div>
                                     </div>
                                 </div>

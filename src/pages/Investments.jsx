@@ -183,6 +183,50 @@ const Investments = () => {
 
     return (
         <div className="dashboard-container">
+            {/* Styles for responsive layout */}
+            <style>{`
+                .portfolio-content {
+                    display: grid;
+                    grid-template-columns: 250px 1fr;
+                    gap: 2rem;
+                    align-items: center;
+                }
+                .portfolio-legend {
+                    display: flex; 
+                    flex-wrap: wrap; 
+                    gap: 1rem;
+                }
+                @media (max-width: 768px) {
+                    .portfolio-content {
+                        grid-template-columns: 1fr;
+                        gap: 1.5rem;
+                        text-align: center;
+                    }
+                    .portfolio-chart-wrapper {
+                        margin: 0 auto;
+                        width: 250px; /* Constrain width on mobile for better pie centering */
+                        height: 250px;
+                    }
+                    .portfolio-legend {
+                        justify-content: center;
+                    }
+                }
+                .tabs-container {
+                    display: flex;
+                    gap: 0.5rem;
+                    margin-bottom: 1.5rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.1);
+                    padding-bottom: 1rem;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                    scrollbar-width: none;
+                    -webkit-overflow-scrolling: touch;
+                }
+                .tabs-container::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
+            
             {/* Header */}
             <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
@@ -197,12 +241,13 @@ const Investments = () => {
             </div>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
+            {/* Tabs */}
+            <div className="tabs-container">
                 {[{ id: 'portfolio', label: 'Portfolio', icon: HiChartPie }, { id: 'analytics', label: 'Analytics', icon: HiChartBar }, { id: 'dividends', label: 'Dividends', icon: HiCurrencyDollar }].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                         padding: '0.75rem 1.5rem', borderRadius: '12px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
                         background: activeTab === tab.id ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'rgba(255,255,255,0.05)',
-                        color: activeTab === tab.id ? 'white' : '#94a3b8', fontWeight: 600, transition: 'all 0.3s'
+                        color: activeTab === tab.id ? 'white' : '#94a3b8', fontWeight: 600, transition: 'all 0.3s', flexShrink: 0
                     }}>
                         <tab.icon size={18} /> {tab.label}
                     </button>
@@ -211,7 +256,7 @@ const Investments = () => {
 
             {/* Summary Cards */}
             {analytics && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                     <SummaryCard icon={HiBanknotes} label="Total Invested" value={formatCurrency(analytics.summary.totalInvested)} color="#6366f1" />
                     <SummaryCard icon={HiChartBar} label="Current Value" value={formatCurrency(analytics.summary.totalCurrentValue)} color="#22c55e" />
                     <SummaryCard icon={analytics.summary.totalProfitLoss >= 0 ? HiArrowTrendingUp : HiArrowTrendingDown} label="Total P/L" value={`${analytics.summary.totalProfitLoss >= 0 ? '+' : ''}${formatCurrency(analytics.summary.totalProfitLoss)}`} subValue={`${analytics.summary.overallReturnPercent >= 0 ? '+' : ''}${analytics.summary.overallReturnPercent.toFixed(2)}%`} color={analytics.summary.totalProfitLoss >= 0 ? '#22c55e' : '#ef4444'} />
@@ -246,16 +291,18 @@ const Investments = () => {
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <HiChartPie style={{ color: '#6366f1' }} /> Portfolio Allocation
                             </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '2rem', alignItems: 'center' }}>
-                                <ResponsiveContainer width="100%" height={200}>
-                                    <PieChart>
-                                        <Pie data={analytics.allocation} dataKey="currentValue" nameKey="type" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2}>
-                                            {analytics.allocation.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                                        </Pie>
-                                        <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                            <div className="portfolio-content">
+                                <div className="portfolio-chart-wrapper">
+                                    <ResponsiveContainer width="100%" height={200}>
+                                        <PieChart>
+                                            <Pie data={analytics.allocation} dataKey="currentValue" nameKey="type" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2}>
+                                                {analytics.allocation.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                                            </Pie>
+                                            <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="portfolio-legend">
                                     {analytics.allocation.map((item, i) => (
                                         <div key={item.type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '150px' }}>
                                             <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: COLORS[i % COLORS.length] }}></div>
@@ -282,13 +329,13 @@ const Investments = () => {
                                     return (
                                         <div key={inv._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: index < filteredInvestments.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', gap: '1rem', flexWrap: 'wrap' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '200px' }}>
-                                                <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>{getTypeIcon(inv.type)}</div>
-                                                <div>
-                                                    <h4 style={{ fontWeight: 600, marginBottom: '4px' }}>{inv.name} {inv.symbol && <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>({inv.symbol})</span>}</h4>
+                                                <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>{getTypeIcon(inv.type)}</div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <h4 style={{ fontWeight: 600, marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{inv.name} {inv.symbol && <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>({inv.symbol})</span>}</h4>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.85rem', color: '#64748b' }}>
                                                         <span style={{ padding: '2px 8px', background: inv.status === 'active' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(148, 163, 184, 0.15)', color: inv.status === 'active' ? '#4ade80' : '#94a3b8', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>{inv.status}</span>
-                                                        <span>{getTypeLabel(inv.type)}</span>
-                                                        {inv.dividendEnabled && <span style={{ color: '#f59e0b' }}>💰 Dividend</span>}
+                                                        <span style={{ whiteSpace: 'nowrap' }}>{getTypeLabel(inv.type)}</span>
+                                                        {inv.dividendEnabled && <span style={{ color: '#f59e0b', whiteSpace: 'nowrap' }}>💰 Dividend</span>}
                                                     </div>
                                                 </div>
                                             </div>

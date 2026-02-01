@@ -82,52 +82,53 @@ const Budgets = () => {
     return (
         <div className="dashboard-container">
             {/* Header */}
-            <div className="dashboard-header">
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Budgets</h1>
-                    <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>Control your spending with monthly limits</p>
-                </div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    <input
-                        type="month"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="input-field"
-                        style={{ width: 'auto' }}
-                    />
-                    <button onClick={() => setShowModal(true)} className="btn-primary">
-                        <HiPlus size={20} />
-                        <span>Add Budget</span>
-                    </button>
+            <div className="page-header">
+                <div className="page-header-content">
+                    <div className="page-header-info">
+                        <h1 className="page-title">Budgets</h1>
+                        <p className="page-subtitle">Control your spending with monthly limits</p>
+                    </div>
+                    <div className="budget-controls">
+                        <input
+                            type="month"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className="input-field month-picker"
+                        />
+                        <button onClick={() => setShowModal(true)} className="btn-primary add-btn">
+                            <HiPlus size={20} />
+                            <span className="add-btn-text">Add Budget</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {/* Summary Card */}
-            <div className="dashboard-section glass">
-                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-                    <div>
-                        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Monthly Budget Overview</p>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.25rem' }}>
-                            <span className="gradient-text" style={{ fontSize: '2rem', fontWeight: 700 }}>{formatCurrency(totalSpent)}</span>
-                            <span style={{ color: '#94a3b8', fontSize: '1.25rem' }}>/ {formatCurrency(totalBudget)}</span>
+            <div className="glass budget-summary-card">
+                <div className="budget-summary-header">
+                    <div className="budget-summary-main">
+                        <p className="budget-summary-label">Monthly Budget Overview</p>
+                        <div className="budget-summary-values">
+                            <span className="gradient-text budget-total-spent">{formatCurrency(totalSpent)}</span>
+                            <span className="budget-total-limit">/ {formatCurrency(totalBudget)}</span>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '2rem' }}>
-                        <div style={{ textAlign: 'center' }}>
-                            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4ade80' }}>
+                    <div className="budget-stats-grid">
+                        <div className="budget-stat-item">
+                            <p className="budget-stat-value success">
                                 {formatCurrency(totalBudget - totalSpent)}
                             </p>
-                            <p style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Remaining</p>
+                            <p className="budget-stat-label">Remaining</p>
                         </div>
-                        <div style={{ textAlign: 'center' }}>
-                            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#818cf8' }}>
+                        <div className="budget-stat-item">
+                            <p className="budget-stat-value primary">
                                 {totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0}%
                             </p>
-                            <p style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Used</p>
+                            <p className="budget-stat-label">Used</p>
                         </div>
                     </div>
                 </div>
-                <div className="progress-bar" style={{ height: '12px', marginTop: '1.5rem', background: 'rgba(255,255,255,0.05)' }}>
+                <div className="progress-bar-container">
                     <div
                         className={`progress-fill ${totalSpent > totalBudget ? 'progress-danger' : 'progress-gradient'}`}
                         style={{ width: `${Math.min((totalSpent / totalBudget) * 100, 100)}%` }}
@@ -136,21 +137,21 @@ const Budgets = () => {
             </div>
 
             {/* Budget Cards */}
-            <div className="grid-3">
+            <div className="budget-cards-grid">
                 {budgets.map((budget) => (
-                    <div key={budget._id} className="glass" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'transform 0.2s', position: 'relative' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div key={budget._id} className="glass budget-card">
+                        <div className="budget-card-header">
                             <div>
-                                <h3 style={{ fontWeight: 600, color: 'white', fontSize: '1.1rem' }}>{budget.category}</h3>
-                                <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '2px' }}>
+                                <h3 className="budget-card-title">{budget.category}</h3>
+                                <p className="budget-card-subtitle">
                                     {formatCurrency(budget.currentSpent)} / {formatCurrency(budget.monthlyLimit)}
                                 </p>
                             </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div className="budget-card-actions">
                                 {(budget.isOverBudget || budget.isNearLimit) && (
                                     <HiExclamationTriangle size={20} color={budget.isOverBudget ? '#ef4444' : '#f59e0b'} />
                                 )}
-                                <button onClick={() => handleDelete(budget._id)} style={{ color: '#64748b' }} className="hover:text-red-400">
+                                <button onClick={() => handleDelete(budget._id)} className="budget-delete-btn">
                                     <HiTrash size={16} />
                                 </button>
                             </div>
@@ -163,22 +164,19 @@ const Budgets = () => {
                             ></div>
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                            <span style={{
-                                fontWeight: 500,
-                                color: budget.isOverBudget ? '#ef4444' : budget.isNearLimit ? '#f59e0b' : '#4ade80'
-                            }}>
+                        <div className="budget-card-footer">
+                            <span className={`budget-percent ${budget.isOverBudget ? 'danger' : budget.isNearLimit ? 'warning' : 'success'}`}>
                                 {budget.spentPercent}% spent
                             </span>
-                            <span style={{ color: '#94a3b8' }}>{formatCurrency(budget.remaining)} left</span>
+                            <span className="budget-remaining">{formatCurrency(budget.remaining)} left</span>
                         </div>
                     </div>
                 ))}
             </div>
 
             {budgets.length === 0 && (
-                <div className="glass" style={{ padding: '4rem', textAlign: 'center', borderRadius: '24px' }}>
-                    <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '1.1rem' }}>No budgets set for this month</p>
+                <div className="glass empty-state">
+                    <p className="empty-state-text">No budgets set for this month</p>
                     <button onClick={() => setShowModal(true)} className="btn-primary">
                         Create Your First Budget
                     </button>

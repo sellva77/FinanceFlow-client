@@ -179,6 +179,81 @@ const Dashboard = () => {
                         padding: 1.25rem !important;
                     }
                 }
+
+                /* Transaction Item Styles */
+                .transaction-item {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    transition: background 0.2s;
+                    gap: 1rem;
+                }
+
+                .transaction-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    min-width: 0; /* Crucial for text truncation */
+                    flex: 1;
+                }
+                
+                .transaction-icon-wrapper {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                }
+
+                .transaction-info {
+                    min-width: 0; /* Enable flex child truncation */
+                    flex: 1;
+                    margin-right: 0.5rem;
+                }
+
+                .transaction-category {
+                    font-weight: 600;
+                    margin-bottom: 2px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .transaction-subtext {
+                    font-size: 0.8rem;
+                    color: #64748b;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .transaction-right {
+                    text-align: right;
+                    flex-shrink: 0;
+                }
+
+                @media (max-width: 480px) {
+                    .transaction-item {
+                        padding: 0.75rem;
+                        gap: 0.75rem;
+                    }
+                    .transaction-left {
+                        gap: 0.75rem;
+                    }
+                    .transaction-icon-wrapper {
+                        width: 36px;
+                        height: 36px;
+                    }
+                    .transaction-category {
+                        font-size: 0.9rem;
+                    }
+                }
             `}</style>
             {/* Hero Section */}
             {settings?.dashboardLayout?.showNetWorth !== false && (
@@ -544,25 +619,10 @@ const Dashboard = () => {
                 {recentTransactions.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {recentTransactions.map((tx) => (
-                            <div key={tx._id} style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '1rem',
-                                borderRadius: '12px',
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                transition: 'background 0.2s'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <div style={{
-                                        width: '44px',
-                                        height: '44px',
-                                        borderRadius: '12px',
+                            <div key={tx._id} className="transaction-item">
+                                <div className="transaction-left">
+                                    <div className="transaction-icon-wrapper" style={{
                                         background: tx.type === 'income' ? 'rgba(34, 197, 94, 0.15)' : tx.type === 'expense' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
                                     }}>
                                         {tx.type === 'income' ? (
                                             <HiArrowTrendingUp size={20} style={{ color: '#22c55e' }} />
@@ -572,14 +632,14 @@ const Dashboard = () => {
                                             <HiArrowsRightLeft size={20} style={{ color: '#6366f1' }} />
                                         )}
                                     </div>
-                                    <div>
-                                        <p style={{ fontWeight: 600, marginBottom: '2px' }}>{tx.category}</p>
-                                        <p style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                                    <div className="transaction-info">
+                                        <p className="transaction-category">{tx.category}</p>
+                                        <p className="transaction-subtext">
                                             {format(new Date(tx.transactionDate), 'MMM d, yyyy')} • {tx.paymentMode}
                                         </p>
                                     </div>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
+                                <div className="transaction-right">
                                     <p style={{
                                         fontSize: '1.1rem',
                                         fontWeight: 'bold',
